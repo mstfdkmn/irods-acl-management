@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
+from src.util import GetiRODSSession
+from src.manage_acl import PermissionManager
+
+
+desc = """Gives (inherit) or removes (noinherit) inheritence on
+an iRODS collection path. -i/--inherit flag accept true/false 
+(small or capital), yes/no (small or capital) and inherit/noinherit
+bolean values.
+
+Example:
+iacl-inherit -i true -c /tempZone/home/rods/collection_A
+iacl-inherit -i NO -c /tempZone/home/rods/collection_A
+"""
+
+arg_parser = ArgumentParser(description=desc,
+                            formatter_class=RawDescriptionHelpFormatter)
+
+arg_parser.add_argument('-i', '--inherit',
+                            help='Specify the inherit flag that will be set on an iRODS path')
+
+arg_parser.add_argument('-c', '--collection',
+                        help='Provide an absolute iRODS path of an iRODS collection')
+
+args = arg_parser.parse_args()
+
+with GetiRODSSession() as session:
+    if args.inherit and args.collection:
+        permission_inherit = PermissionManager(session, target_path=args.collection)
+        permission_inherit.set_inherit(alc_type=args.inherit)

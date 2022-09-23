@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
+from src.util import GetiRODSSession
+from src.manage_acl import PermissionManager
+
+
+desc = """Lists permission(ACL) types existed on an iRODS path. 
+If the path represents a collection, then shows inheritance as bolean
+and only shows permission of collection itself. When -r flag is used,
+it shows recursively permissions of sub collections.
+
+Example:
+iacl-ls -p /tempZone/home/rods
+iacl-ls -p /tempZone/home/rods/data_object
+iacl-ls -r /tempZone/home/rods
+"""
+
+arg_parser = ArgumentParser(description=desc,
+                            formatter_class=RawDescriptionHelpFormatter)
+
+arg_parser.add_argument('-p', '--path',
+                        help='Provide an absolute iRODS path - collection or data object')
+
+arg_parser.add_argument('-r', '--recursive',
+                        help='Lists permission(ACL) types existed on an iRODS collection path recursively. \
+                              Lists only for collections, including ACLs and inheritance')
+
+args = arg_parser.parse_args()
+
+with GetiRODSSession() as session:
+    if args.path:
+        permission_list = PermissionManager(session, source_path=args.path)
+        permission_list.list_acl()
+    if args.recursive:
+        permission_list_recursive = PermissionManager(session, target_path=args.recursive)
+        permission_list_recursive.list_acl_recursively()

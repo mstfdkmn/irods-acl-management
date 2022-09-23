@@ -1,0 +1,27 @@
+#!/usr/bin/env python
+
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
+from src.util import GetiRODSSession
+from src.manage_acl import PermissionManager
+
+
+desc = """Removes all permissions(ACLs) given to an iRODS path 
+regardless of whether the provided path is collection or data object.
+
+Example:
+iacl-clear -p /tempZone/home/rods/data.txt
+"""
+
+arg_parser = ArgumentParser(description=desc,
+                            formatter_class=RawDescriptionHelpFormatter)
+
+arg_parser.add_argument('-rm', '--remove',
+                        help='Provide an absolute iRODS path - collection or data object -\
+                              to remove its all attached permissions')
+
+args = arg_parser.parse_args()
+
+with GetiRODSSession() as session:
+    if args.remove:
+        permission_rm = PermissionManager(session, source_path=args.remove)
+        permission_rm.remove_all_acl()
