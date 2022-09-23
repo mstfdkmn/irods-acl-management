@@ -32,6 +32,7 @@ with GetiRODSSession() as session:
     if args.path:
         permission_list = PermissionManager(session, source_path=args.path)
         permission_list.list_acl()
+
     if args.recursive:
         permission_list_recursive = PermissionManager(session, target_path=args.recursive)
         permission_list_recursive.list_acl_recursively()

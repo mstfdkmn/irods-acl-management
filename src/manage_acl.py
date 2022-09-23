@@ -1,5 +1,6 @@
 from irods.access import iRODSAccess
 from irods.exception import CollectionDoesNotExist, DataObjectDoesNotExist
+from .util import query_data_obj
 
 
 class PermissionManager(object):
@@ -110,13 +111,45 @@ class PermissionManager(object):
                     self.session.permissions.set(acl_target_data_objects, admin=True)
                 except Exception as err:
                     print(err.code)
+    
+    def remove_all_acl_recursively(self):
+        """
+        A method to delete existing ACLs on 
+        an iRODS collection path recursively
+        """
+        try:
+            collection = self.session.collections.get(self.target_path)
+        except CollectionDoesNotExist:
+            print('Recursive can only be applied on an existing collection!')
+            pass
+        else:
+            all_colls = collection.walk()
+            for item in all_colls:
+                coll_path = item[0].path
+                try:
+                    coll = self.session.collections.get(coll_path)
+                    permissions = self.session.permissions.get(coll)
+                    for item in permissions:
+                        acl_target_collection = iRODSAccess('null', coll_path, item.user_name)                    
+                        self.session.permissions.set(acl_target_collection, admin=True)
+                except Exception as err:
+                    print(err.args)
+                if len(coll_path) != 0:
+                    result = query_data_obj(self.session, coll_path)
+                    for data_path in result:
+                        try:
+                            obj = self.session.data_objects.get(data_path)
+                            permissions = self.session.permissions.get(obj)
+                        except Exception as err:
+                            print(err.args)
+                        for item in permissions:
+                            acl_target_data_objects = iRODSAccess('null', data_path, item.user_name)
+                            self.session.permissions.set(acl_target_data_objects, admin=True)
 
     def set_acl(self, user, alc_type):
         """
         A method to set (add/modify/remove) given ACLs via cli arguments to
         a user/group for an iRODS path
-
-        manage_acl user1 write /myZone/home/user1
         """
         acl_target_data_objects = iRODSAccess(alc_type, self.target_path, user)                    
         self.session.permissions.set(acl_target_data_objects, admin=True)
@@ -125,8 +158,6 @@ class PermissionManager(object):
         """
         A method to set (add/modify/remove) given ACLs via cli arguments to
         a user/group for an iRODS path
-
-        manage_acl -i False /myZone/home/user1
         """
         try:
             coll = self.session.collections.get(self.target_path)
@@ -167,12 +198,7 @@ class PermissionManager(object):
                     self.session.permissions.set(acl_inherit, admin=True)
         
     def list_acl(self):
-        """
-        A method to list all given ACLs via cli arguments to an iRODS path
-
-        manage_acl -l /myZone/home/user1
-        manage_acl -l /myZone/home/user1/test.txt
-        """
+        """A method to list all given ACLs on an iRODS path"""
         inheritance, acls_source_collections = self.__get_collection_acl()
         acls_source_data_objects = self.__get_data_object_acl()
         if acls_source_collections != None:
@@ -196,8 +222,6 @@ class PermissionManager(object):
         A method to list all given ACLs together with inherit information
         recursively for an iRODS path
         Lists only for sub-collections from top to down
-
-        manage_acl -lr /myZone/home/user1
         """
         try:
             collection = self.session.collections.get(self.target_path)
@@ -224,8 +248,6 @@ class PermissionManager(object):
         A method to list all given ACLs together with inherit 
         information for two iRODS paths
         Lists only for given collections and their first level data objects for comparision
-
-        manage_acl -ls /myZone/home/user1 -lt /myZone/home/user2
         """
         try:
             collection_source = self.session.collections.get(source)
@@ -283,8 +305,6 @@ class PermissionManager(object):
         A method to list all given ACLs together with inherit information 
         recursively for two iRODS paths
         Lists only for sub-collections from top to down
-
-        manage_acl -sr /myZone/home/user1 -tr /myZone/home/user2
         """
         try:
             collection_source = self.session.collections.get(source)

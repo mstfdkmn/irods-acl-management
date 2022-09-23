@@ -15,13 +15,21 @@ iacl-clear -p /tempZone/home/rods/data.txt
 arg_parser = ArgumentParser(description=desc,
                             formatter_class=RawDescriptionHelpFormatter)
 
-arg_parser.add_argument('-rm', '--remove',
+arg_parser.add_argument('-p', '--path',
+                        help='Provide an absolute iRODS path - collection or data object -\
+                              to remove its all attached permissions')
+
+arg_parser.add_argument('-pr', '--path_recursive',
                         help='Provide an absolute iRODS path - collection or data object -\
                               to remove its all attached permissions')
 
 args = arg_parser.parse_args()
 
 with GetiRODSSession() as session:
-    if args.remove:
-        permission_rm = PermissionManager(session, source_path=args.remove)
+    if args.path:
+        permission_rm = PermissionManager(session, source_path=args.path)
         permission_rm.remove_all_acl()
+    
+    if args.path_recursive:
+            permission_clear_recursive = PermissionManager(session, target_path=args.path_recursive)
+            permission_clear_recursive.remove_all_acl_recursively()

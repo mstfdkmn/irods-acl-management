@@ -4,7 +4,7 @@
 This is a complementary command line utility for rodsadmin users to manage permissions - ACLs - in iRODS easily. Those commands can be used next to `ils` and `ichmod` of `iCommands`.
 
 ## How to use
-A set of scripts available in the `commands` directory can be used mainly for copying ACLs from one path (an absolute iRODS collection or data object path) to another and for comparing available ACLs on two collections. Those commands can also be used for facilating some other permission related operations. Each command will show a documentation that describes funcinalities, arguments and examples by `-h` or `--help` e.g. iacl-copy --help. 
+A set of scripts available in the `commands` directory can be used mainly for copying ACLs from one path (an absolute iRODS collection or data object path) to another and for comparing available ACLs on two collections. Those commands can also be used for facilating some other permission related operations. Each command will show a documentation that describes funcinalities, arguments and examples by `-h` or `--help` e.g. `iacl-copy --help`. 
 
 - `iacl-add` can be used to add and remove a specified permission to/from an iRODS path for a user or group.
 
@@ -47,7 +47,7 @@ iacl-ls -r /tempZone/home/rods
 ## Dependencies
 
 - Python3
-- python-irodsclient >= v0.8.4
+- python-irodsclient
 
 ## Installation
 
