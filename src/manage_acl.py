@@ -146,13 +146,30 @@ class PermissionManager(object):
                             acl_target_data_objects = iRODSAccess('null', data_path, item.user_name)
                             self.session.permissions.set(acl_target_data_objects, admin=True)
 
-    def set_acl(self, user, alc_type):
+    def set_acl(self, user, alc_type, recursive=False):
         """
         A method to set (add/modify/remove) given ACLs via cli arguments to
         a user/group for an iRODS path
         """
-        acl_target_data_objects = iRODSAccess(alc_type, self.target_path, user)                    
-        self.session.permissions.set(acl_target_data_objects, admin=True)
+        if recursive:
+            try:
+                collection = self.session.collections.get(self.target_path)
+            except CollectionDoesNotExist:
+                print('Recursive can only be applied on an existing collection!')
+                pass
+            all_colls = collection.walk()
+            for item in all_colls:
+                coll_path = (item[0].path)
+                acl_target_collections = iRODSAccess(alc_type, coll_path, user)
+                self.session.permissions.set(acl_target_collections, admin=True)
+                if len(item[2]) != 0:
+                    for data_obj in item[2]:
+                        data_obj_name = data_obj.name
+                        data_obj_path = f'{coll_path}/{data_obj_name}'
+                        acl_target_data_objects = iRODSAccess(alc_type, data_obj_path, user)                    
+                        self.session.permissions.set(acl_target_data_objects, admin=True)
+        acl_target_data_path = iRODSAccess(alc_type, self.target_path, user)
+        self.session.permissions.set(acl_target_data_path, admin=True)
     
     def set_inherit(self, alc_type=None):
         """
@@ -166,34 +183,12 @@ class PermissionManager(object):
             pass
         else:
             if coll:
-                if alc_type == 'True':
+                if alc_type == 'True' or alc_type == 'true' or alc_type == 'inherit'\
+                    or alc_type == 'yes' or alc_type == 'YES':
                     acl_inherit = iRODSAccess('inherit', self.target_path)
                     self.session.permissions.set(acl_inherit,  admin=True)
-                elif alc_type == 'true':
-                    acl_inherit = iRODSAccess('inherit', self.target_path)
-                    self.session.permissions.set(acl_inherit,  admin=True)
-                elif alc_type == 'inherit':
-                    acl_inherit = iRODSAccess('inherit', self.target_path)
-                    self.session.permissions.set(acl_inherit,  admin=True)
-                elif alc_type == 'yes':
-                    acl_inherit = iRODSAccess('inherit', self.target_path)
-                    self.session.permissions.set(acl_inherit,  admin=True)
-                elif alc_type == 'YES':
-                    acl_inherit = iRODSAccess('inherit', self.target_path)
-                    self.session.permissions.set(acl_inherit,  admin=True)
-                if alc_type == 'False':
-                    acl_inherit = iRODSAccess('noinherit', self.target_path)
-                    self.session.permissions.set(acl_inherit, admin=True)
-                elif alc_type == 'false':
-                    acl_inherit = iRODSAccess('noinherit', self.target_path)
-                    self.session.permissions.set(acl_inherit, admin=True)
-                elif alc_type == 'noinherit':
-                    acl_inherit = iRODSAccess('noinherit', self.target_path)
-                    self.session.permissions.set(acl_inherit, admin=True)
-                elif alc_type == 'no':
-                    acl_inherit = iRODSAccess('noinherit', self.target_path)
-                    self.session.permissions.set(acl_inherit, admin=True)
-                elif alc_type == 'NO':
+                if alc_type == 'False' or alc_type == 'false' or alc_type == 'noinherit'\
+                    or alc_type == 'no' or alc_type == 'NO':
                     acl_inherit = iRODSAccess('noinherit', self.target_path)
                     self.session.permissions.set(acl_inherit, admin=True)
         

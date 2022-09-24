@@ -8,7 +8,8 @@ from src.manage_acl import PermissionManager
 desc = """Adds permission(ACL - own/write/read/null) on an iRODS
 path provided for a user or group. Adding 'null' permission means
 removing the permission for the user in question. Hence it removes
-permissions of a user/group.
+permissions of a user/group. Recursive option can be used to apply
+changes from top to down.
 
 Example:
 iacl-add -u userBob -o read -p /tempZone/home/rods/data_obj.txt
@@ -28,9 +29,16 @@ arg_parser.add_argument('-o', '--operation',
 arg_parser.add_argument('-p', '--path',
                         help='Provide an absolute iRODS path - collection or data object')
 
+arg_parser.add_argument('-r', '--recursive',
+                        help='Provide an absolute iRODS collection path for recursive operatiion')
+
 args = arg_parser.parse_args()
 
 with GetiRODSSession() as session:
     if args.user and args.operation and args.path:
         permission_set = PermissionManager(session, target_path=args.path)
         permission_set.set_acl(args.user, args.operation)
+
+    if args.user and args.operation and args.recursive:
+        permission_set = PermissionManager(session, target_path=args.recursive)
+        permission_set.set_acl(args.user, args.operation, recursive=True)

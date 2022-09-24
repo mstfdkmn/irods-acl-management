@@ -1,7 +1,7 @@
 # irods-acl-admin
 
 ## Summary
-This is a complementary command line utility for rodsadmin users to manage permissions - ACLs - in iRODS easily. Those commands can be used next to `ils` and `ichmod` of `iCommands`.
+This is a complementary command line utility for rodsadmin users to manage permissions - ACLs - in iRODS easily. Those commands can be used in case `ils` and `ichmod` of `iCommands` don't meet what you need.
 
 ## How to use
 A set of scripts available in the `commands` directory can be used mainly for copying ACLs from one path (an absolute iRODS collection or data object path) to another and for comparing available ACLs on two collections. Those commands can also be used for facilating some other permission related operations. Each command will show a documentation that describes funcinalities, arguments and examples by `-h` or `--help` e.g. `iacl-copy --help`. 
@@ -39,7 +39,7 @@ iacl-inherit -i true -c /tempZone/home/rods/collection_A
 - `iacl-list` can be used to list the granted permissions. The aim of this command is to offer different options for various scenarios.
 
 ``` bash
-iacl-ls -r /tempZone/home/rods
+iacl-list -r /tempZone/home/rods
 ```
 
 `PermissionManager` can also be used in any script by importing it as long as authentication to iRODS is ensured.

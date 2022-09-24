@@ -39,6 +39,7 @@ def query_data_obj(session, coll_path):
     -------
     A generator object for iRODS data object path
     """
+    
     query = session.query(DataObject.name, Collection.name).filter(
                                Collection.name == coll_path)            
     for result in query:
