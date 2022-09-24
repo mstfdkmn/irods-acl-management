@@ -33,11 +33,16 @@ arg_parser.add_argument('-r', '--recursive', action='store_false',
 
 args = arg_parser.parse_args()
 
-with GetiRODSSession() as session:
-    if args.args[0] and args.args[1] and args.args[2]:
-        permission_set = PermissionManager(session, target_path=args.args[2])
-        permission_set.set_acl(args.args[1], args.args[0])
+acl_type = args.args[0]
+irods_path = args.args[-1]
+users = args.args[1:-1]
 
-    if args.recursive == False:
-        permission_set = PermissionManager(session, target_path=args.args[2])
-        permission_set.set_acl(args.args[1], args.args[0], recursive=True)
+with GetiRODSSession() as session:
+    for user in users:
+        if acl_type and irods_path:
+            permission_set = PermissionManager(session, target_path=irods_path)
+            permission_set.set_acl(user, acl_type)
+
+        if args.recursive == False:
+            permission_set = PermissionManager(session, target_path=irods_path)
+            permission_set.set_acl(user, acl_type, recursive=True)
