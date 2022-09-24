@@ -1,32 +1,36 @@
 #!/usr/bin/env python
 
+import sys
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from src.util import GetiRODSSession
 from src.manage_acl import PermissionManager
 
 
 desc = """Gives (inherit) or removes (noinherit) inheritence on
-an iRODS collection path. -i/--inherit flag accept true/false 
+an iRODS collection path. argument accepts true/false 
 (small or capital), yes/no (small or capital) and inherit/noinherit
 bolean values.
 
 Example:
-iacl-inherit -i true -c /tempZone/home/rods/collection_A
-iacl-inherit -i NO -c /tempZone/home/rods/collection_A
+iacl-inherit true /tempZone/home/rods/collection_A
+iacl-inherit NO /tempZone/home/rods/collection_A
 """
+
+if len(sys.argv) < 2:
+    print('You need to specify an option/argument/parameter!')
+    print('Check iacl-inherit --help or -h for more information.')
+    sys.exit()
 
 arg_parser = ArgumentParser(description=desc,
                             formatter_class=RawDescriptionHelpFormatter)
 
-arg_parser.add_argument('-i', '--inherit',
-                            help='Specify the inherit flag that will be set on an iRODS path')
-
-arg_parser.add_argument('-c', '--collection',
-                        help='Provide an absolute iRODS path of an iRODS collection')
+arg_parser.add_argument('args', nargs='*',
+                        help='Specify a bolean value that will set inherit or noinherit as\
+                              first position and as second argument write an absolute iRODS path')
 
 args = arg_parser.parse_args()
 
 with GetiRODSSession() as session:
-    if args.inherit and args.collection:
-        permission_inherit = PermissionManager(session, target_path=args.collection)
-        permission_inherit.set_inherit(alc_type=args.inherit)
+    if args.args[0] and args.args[1]:
+        permission_inherit = PermissionManager(session, target_path=args.args[1])
+        permission_inherit.set_inherit(alc_type=args.args[0])

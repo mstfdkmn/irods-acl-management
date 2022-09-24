@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from src.util import GetiRODSSession
 from src.manage_acl import PermissionManager
@@ -9,27 +10,33 @@ desc = """Removes all permissions(ACLs) given to an iRODS path
 regardless of whether the provided path is collection or data object.
 
 Example:
-iacl-clear -p /tempZone/home/rods/data.txt
+iacl-clear /tempZone/home/rods/data.txt
+iacl-clear -r /tempZone/home/rods
 """
+
+if len(sys.argv) < 2:
+    print('You need to specify an option/argument/parameter!')
+    print('Check iacl-clear --help or -h for more information.')
+    sys.exit()
 
 arg_parser = ArgumentParser(description=desc,
                             formatter_class=RawDescriptionHelpFormatter)
 
-arg_parser.add_argument('-p', '--path',
+arg_parser.add_argument('args', nargs='*',
                         help='Provide an absolute iRODS path - collection or data object -\
                               to remove its all attached permissions')
 
-arg_parser.add_argument('-pr', '--path_recursive',
-                        help='Provide an absolute iRODS path - collection or data object -\
-                              to remove its all attached permissions')
+arg_parser.add_argument('-r', '--recursive',
+                        help='Provide an absolute iRODS path - collection -to remove \
+                              recursively all attached permissions of sub items')
 
 args = arg_parser.parse_args()
 
 with GetiRODSSession() as session:
-    if args.path:
-        permission_rm = PermissionManager(session, source_path=args.path)
+    for arg in args.args:
+        permission_rm = PermissionManager(session, source_path=arg)
         permission_rm.remove_all_acl()
     
-    if args.path_recursive:
-            permission_clear_recursive = PermissionManager(session, target_path=args.path_recursive)
+    if args.recursive:
+            permission_clear_recursive = PermissionManager(session, target_path=args.recursive)
             permission_clear_recursive.remove_all_acl_recursively()

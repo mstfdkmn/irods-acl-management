@@ -12,37 +12,30 @@ When -r flag is used then it only shows recursively permissions of collections
 themself and their sub collections.
 
 Example:
-iacl-compare -s /tempZone/home/rods -t /tempZone/home/bob
-iacl-compare -sr /tempZone/home/rods/coll_A -tr /tempZone/home/bob/coll_B
+iacl-compare /tempZone/home/rods /tempZone/home/bob
+iacl-compare /tempZone/home/rods/coll_A /tempZone/home/bob/coll_B
 """
 
 arg_parser = ArgumentParser(description=desc,
                             formatter_class=RawDescriptionHelpFormatter)
 
-arg_parser.add_argument('-s', '--source',
-                        help='Lists permission(ACL) types existed on an iRODS path to compare with a target path. \
+arg_parser.add_argument('args', nargs='*',
+                        help='Lists permissions(ACL) existed on an iRODS path to compare with a target path. \
                               Lists only for a given collection and its data objects, including ACLs and inheritance')
 
-arg_parser.add_argument('-t', '--target',
-                        help='Lists permission(ACL) types existed on an iRODS path to compare with a source path. \
-                              Lists only for a given collection and its data objects, including ACLs and inheritance')
-
-arg_parser.add_argument('-sr', '--source_recursive',
-                        help='Lists permission(ACL) types existed on an iRODS path recursively. Lists only for collections,\
-                              including ACLs and inheritance')
-arg_parser.add_argument('-tr', '--target_recursive',
-                        help='Lists permission(ACL) types existed on an iRODS path recursively. Lists only for collections,\
+arg_parser.add_argument('-r', '--recursive', action='store_false',
+                        help='Lists permissions(ACL) existed on an iRODS path recursively. Lists only for collections,\
                               including ACLs and inheritance')
 
 args = arg_parser.parse_args()
 
 with GetiRODSSession() as session:
-    if args.source and args.target:
-        permission_compare_recursive = PermissionManager(session)
-        permission_compare_recursive.compare_acl_of_two_collections(
-                                        args.source, args.target)
+      if args.args[0] and args.args[1] and args.recursive == True:
+            permission_compare_recursive = PermissionManager(session)
+            permission_compare_recursive.compare_acl_of_two_collections(
+                                          args.args[0], args.args[1])
 
-    if args.source_recursive and args.target_recursive:
+      if args.recursive == False:
         permission_compare_recursive = PermissionManager(session)
         permission_compare_recursive.compare_acl_of_two_collections_recursively(
-                                        args.source_recursive, args.target_recursive)
+                                        args.args[0], args.args[1])

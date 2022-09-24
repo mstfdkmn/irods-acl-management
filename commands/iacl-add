@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from src.util import GetiRODSSession
 from src.manage_acl import PermissionManager
@@ -12,33 +13,31 @@ permissions of a user/group. Recursive option can be used to apply
 changes from top to down.
 
 Example:
-iacl-add -u userBob -o read -p /tempZone/home/rods/data_obj.txt
-iacl-add -u group_A -o null -p /tempZone/home/rods/project
+iacl-add read userBob /tempZone/home/rods/data_obj.txt
+iacl-add null group_A /tempZone/home/rods/project
 """
+
+if len(sys.argv) < 2:
+    print('You need to specify an option/argument/parameter!')
+    print('Check iacl-add --help or -h for more information.')
+    sys.exit()
 
 arg_parser = ArgumentParser(description=desc,
                             formatter_class=RawDescriptionHelpFormatter)
 
-arg_parser.add_argument('-u', '--user',
-                        help='Specifies user or group name to add/change/remove a permission(ACLs) on an iRODS path')
-
-arg_parser.add_argument('-o', '--operation',
-                        help='Specifies permission(ACL) type which exists in the iRODS permission model\
-                              to be given for a user/group on an iRODS path')
-
-arg_parser.add_argument('-p', '--path',
+arg_parser.add_argument('args', nargs='*',
                         help='Provide an absolute iRODS path - collection or data object')
 
-arg_parser.add_argument('-r', '--recursive',
+arg_parser.add_argument('-r', '--recursive', action='store_false',
                         help='Provide an absolute iRODS collection path for recursive operatiion')
 
 args = arg_parser.parse_args()
 
 with GetiRODSSession() as session:
-    if args.user and args.operation and args.path:
-        permission_set = PermissionManager(session, target_path=args.path)
-        permission_set.set_acl(args.user, args.operation)
+    if args.args[0] and args.args[1] and args.args[2]:
+        permission_set = PermissionManager(session, target_path=args.args[2])
+        permission_set.set_acl(args.args[1], args.args[0])
 
-    if args.user and args.operation and args.recursive:
-        permission_set = PermissionManager(session, target_path=args.recursive)
-        permission_set.set_acl(args.user, args.operation, recursive=True)
+    if args.recursive == False:
+        permission_set = PermissionManager(session, target_path=args.args[2])
+        permission_set.set_acl(args.args[1], args.args[0], recursive=True)

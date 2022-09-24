@@ -187,10 +187,12 @@ class PermissionManager(object):
                     or alc_type == 'yes' or alc_type == 'YES':
                     acl_inherit = iRODSAccess('inherit', self.target_path)
                     self.session.permissions.set(acl_inherit,  admin=True)
-                if alc_type == 'False' or alc_type == 'false' or alc_type == 'noinherit'\
+                elif alc_type == 'False' or alc_type == 'false' or alc_type == 'noinherit'\
                     or alc_type == 'no' or alc_type == 'NO':
                     acl_inherit = iRODSAccess('noinherit', self.target_path)
                     self.session.permissions.set(acl_inherit, admin=True)
+                else:
+                    print("There's something wrong with the way your argument is typed!")
         
     def list_acl(self):
         """A method to list all given ACLs on an iRODS path"""

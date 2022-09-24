@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from src.util import GetiRODSSession
 from src.manage_acl import PermissionManager
@@ -10,24 +11,27 @@ regardless of the object type. This path can be both of a collection or
 data object. The only restriction is that absolute paths should be provided.
 
 Example:
-iacl-copy -sp /tempZone/home/rods -tp /tempZone/home/bob
-iacl-copy -sp /tempZone/home/rods/data_obj.txt /tempZone/home/bob/collection_A
-iacl-copy -sp /tempZone/home/bob/collection_A /tempZone/home/rods/data_obj.txt
-iacl-copy -sp /tempZone/home/bob/data_obj_A.txt /tempZone/home/rods/data_obj_B.txt
+iacl-copy /tempZone/home/rods /tempZone/home/bob
+iacl-copy /tempZone/home/rods/data_obj.txt /tempZone/home/bob/collection_A
+iacl-copy /tempZone/home/bob/collection_A /tempZone/home/rods/data_obj.txt
+iacl-copy /tempZone/home/bob/data_obj_A.txt /tempZone/home/rods/data_obj_B.txt
 """
+
+if len(sys.argv) < 2:
+    print('You need to specify an option/argument/parameter!')
+    print('Check iacl-copy --help or -h for more information.')
+    sys.exit()
 
 arg_parser = ArgumentParser(description=desc,
                             formatter_class=RawDescriptionHelpFormatter)
 
-arg_parser.add_argument('-s', '--source',
-                        help='Specify the iRODS path of which permissions(ACLs) will be copied')
-
-arg_parser.add_argument('-t', '--target',
-                        help='Specify the iRODS path to which permissions(ACLs) copied will be pasted')
+arg_parser.add_argument('args', nargs='*',
+                        help='Specify the iRODS path of which permissions(ACLs) will be copied as first argument and,\
+                              as second argument specify the iRODS path to which permissions(ACLs) copied will be pasted')
 
 args = arg_parser.parse_args()
 
 with GetiRODSSession() as session:
-    if args.source and args.target:
-        permission_copy = PermissionManager(session, source_path=args.source, target_path=args.target)
+    if args.args[0] and args.args[1]:
+        permission_copy = PermissionManager(session, source_path=args.args[0], target_path=args.args[1])
         permission_copy.copy_acl()
