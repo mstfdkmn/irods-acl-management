@@ -7,11 +7,11 @@ This is a complementary command line utility for rodsadmin users to manage permi
 - Who to attach permissions for those orphaned objects?
 - How to copy all permissions exist on an object to another?
 - How to manipulate multiple permissions (granted access) of an object at once?
-- How ro remove all available permissions of an object (also recursively for collections) at once?
+- How to remove all available permissions of an object (also recursively for collections) at once?
 - Can inheritance of an collection be set with various logical notations rather than `inherit/noinherit`?
 - How to list permissions of only a collection (without data object) and permissions of all sub-collections from top to down?
 - Can it be possible to compare permissions of two collections (without data objects)?
-- How to save output of any listed permissions in various format?
+- How to save output of any listed permissions in various formats (json, csv)?
 
 
 ## How to use
@@ -67,3 +67,5 @@ iacl-list -r /tempZone/home/rods /tempZone/home/bob
   irods-acl-admin's root directory
 - Add the `$iRODS_ACL_ROOT` directory to your `$PYTHONPATH`
 - Add the `$iRODS_ACL_ROOT/commands` directory to your `$PATH`
+
+Or linux users can download `setup.sh` file and run `bash setup.sh` command.
