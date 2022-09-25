@@ -1,4 +1,4 @@
-# irods-acl-admin
+# irods-acl-management
 
 ## Summary
 This is a complementary command line utility for rodsadmin users to manage permissions - ACLs - in iRODS easily. These commands listed below can be used in case `ils` and `ichmod` of `iCommands` don't meet what you need when dealing with permission releated topics. They bring mainly sort of easy solutions to the following issues:
