@@ -13,7 +13,7 @@ themself and their sub collections.
 
 Example:
 iacl-compare /tempZone/home/rods /tempZone/home/bob
-iacl-compare /tempZone/home/rods/coll_A /tempZone/home/bob/coll_B
+iacl-compare -r /tempZone/home/rods/coll_A /tempZone/home/bob/coll_B
 """
 
 arg_parser = ArgumentParser(description=desc,
