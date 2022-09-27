@@ -207,14 +207,18 @@ class PermissionManager(object):
                 break
             [print(f'     g:{i.user_name}#{i.user_zone}:{i.access_name}') \
             if (check_user_group(self.session, i.user_name)) is True \
-            else print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') for i in acls_source_collections]
+            else print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') \
+            for i in acls_source_collections]
         if acls_source_data_objects != None:
+            if len(acls_source_data_objects) == 0:
+                print(f'ACL - ')
             for i in acls_source_data_objects:
                 print(f'ACL - {i.path}:')
                 break
             [print(f'     g:{i.user_name}#{i.user_zone}:{i.access_name}') \
             if check_user_group(self.session, i.user_name) is True \
-            else print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') for i in acls_source_data_objects]
+            else print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') \
+            for i in acls_source_data_objects]
 
     def list_acl_recursively(self):
         """
@@ -242,7 +246,8 @@ class PermissionManager(object):
                     break
                 [print(f'     g:{i.user_name}#{i.user_zone}:{i.access_name}') \
                 if check_user_group(self.session, i.user_name) is True \
-                else print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') for i in permissions]
+                else print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') \
+                for i in permissions]
     
     def compare_acl_of_two_collections(self, source, target):
         """
@@ -267,7 +272,8 @@ class PermissionManager(object):
                 for i in permissions:
                     print(f'ACL - {i.path}:')
                     break
-                [print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') for i in permissions]
+                [print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') \
+                for i in permissions]
                 for i in item[0].data_objects:
                     obj_path = f'{item[0].path}/{i.name}'
                     obj = self.session.data_objects.get(obj_path)
@@ -275,7 +281,8 @@ class PermissionManager(object):
                     for i in permissions_data_objects:
                         print(f'ACL - {i.path}:')
                         break
-                    [print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') for i in permissions_data_objects]
+                    [print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') \
+                    for i in permissions_data_objects]
                 break
         
             print('\n-------------------------------TARGET COLLECTION------------------------------------\n')
@@ -290,7 +297,8 @@ class PermissionManager(object):
                 for i in permissions:
                     print(f'ACL - {i.path}:')
                     break
-                [print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') for i in permissions]
+                [print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') \
+                for i in permissions]
                 for i in item[0].data_objects:
                     obj_path = f'{item[0].path}/{i.name}'
                     obj = self.session.data_objects.get(obj_path)
@@ -298,7 +306,8 @@ class PermissionManager(object):
                     for i in permissions_data_objects:
                         print(f'ACL - {i.path}:')
                         break
-                    [print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') for i in permissions_data_objects]
+                    [print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') \
+                    for i in permissions_data_objects]
                 break
 
     def compare_acl_of_two_collections_recursively(self, source, target):
@@ -325,7 +334,8 @@ class PermissionManager(object):
                 for i in permissions:
                     print(f'ACL - {i.path}:')
                     break
-                [print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') for i in permissions]
+                [print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') \
+                for i in permissions]
 
             print('\n-------------------------------TARGET COLLECTION------------------------------------\n')
 
@@ -338,4 +348,5 @@ class PermissionManager(object):
                 for i in permissions:
                     print(f'ACL - {i.path}:')
                     break
-                [print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') for i in permissions]
+                [print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') \
+                for i in permissions]
