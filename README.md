@@ -8,7 +8,7 @@ This is a complementary command line utility for rodsadmin users to manage permi
 - How to copy all permissions exist on an object to another?
 - How to manipulate multiple permissions (granted access) of an object at once?
 - How to remove all available permissions of an object (also recursively for collections) at once?
-- Can inheritance of an collection be set with various logical notations rather than `inherit/noinherit`?
+- Can the inheritance of an collection be set with various logical notations rather than `inherit/noinherit`?
 - How to list permissions of only a collection (without data object) and permissions of all sub-collections from top to down?
 - Can it be possible to compare permissions of two collections (without data objects)?
 - How to save output of any listed permissions in various formats (json, csv)?

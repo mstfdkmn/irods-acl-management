@@ -1,6 +1,6 @@
 from irods.access import iRODSAccess
 from irods.exception import CollectionDoesNotExist, DataObjectDoesNotExist
-from .util import query_data_obj
+from .util import query_data_obj, check_user_group
 
 
 class PermissionManager(object):
@@ -57,7 +57,7 @@ class PermissionManager(object):
         try:
             coll = self.session.collections.get(self.source_path)
             inheritance = coll.inheritance
-            permissions = self.session.permissions.get(coll)
+            permissions = self.session.permissions.get(coll, report_raw_acls=True)
         except CollectionDoesNotExist:
             permissions = None
             inheritance = None
@@ -205,14 +205,16 @@ class PermissionManager(object):
             for i in acls_source_collections:
                 print(f'ACL - {i.path}:')
                 break
-            [print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') for i in acls_source_collections]
-
+            [print(f'     g:{i.user_name}#{i.user_zone}:{i.access_name}') \
+            if (check_user_group(self.session, i.user_name)) is True \
+            else print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') for i in acls_source_collections]
         if acls_source_data_objects != None:
-            print(f'Inheritance: {inheritance}')
             for i in acls_source_data_objects:
                 print(f'ACL - {i.path}:')
                 break
-            [print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') for i in acls_source_data_objects]
+            [print(f'     g:{i.user_name}#{i.user_zone}:{i.access_name}') \
+            if check_user_group(self.session, i.user_name) is True \
+            else print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') for i in acls_source_data_objects]
 
     def list_acl_recursively(self):
         """
@@ -238,7 +240,9 @@ class PermissionManager(object):
                 for i in permissions:
                     print(f'ACL - {i.path}:')
                     break
-                [print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') for i in permissions]
+                [print(f'     g:{i.user_name}#{i.user_zone}:{i.access_name}') \
+                if check_user_group(self.session, i.user_name) is True \
+                else print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') for i in permissions]
     
     def compare_acl_of_two_collections(self, source, target):
         """
