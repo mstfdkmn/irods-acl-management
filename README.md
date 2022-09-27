@@ -26,19 +26,33 @@ iacl-add read userBob userJan group_A /tempZone/home/rods/data_obj.txt
 - `iacl-clear`
 
 ``` bash
-iacl-clear -r /tempZone/home/rods/collections_A
+iacl-clear -r /tempZone/home/rods/collection_A
+iacl-clear -r /tempZone/home/group_A
+iacl-clear /tempZone/home/rods/data_obj
 ```
 
-- `iacl-compare`
+- `iacl-check`
 
 ``` bash
-iacl-compare -r /tempZone/home/rods/coll_A /tempZone/home/bob/coll_B
+iacl-check -r /tempZone/home/rods
+iacl-check /tempZone/home/rods/collection_A
+iacl-check /tempZone/home/rods/data_obj
+```
+
+- `iacl-restore`
+
+``` bash
+iacl-check -r /tempZone/home/rods
+iacl-check /tempZone/home/rods/collection_A
+iacl-check /tempZone/home/rods/data_obj
 ```
 
 - `iacl-copy`
 
 ``` bash
-iacl-copy tempZone/home/bob/collection_A /tempZone/home/rods/data_obj.txt
+iacl-copy tempZone/home/bob/collection_A /tempZone/home/rods/data_obj
+iacl-copy tempZone/home/bob/collection_A /tempZone/home/rods/collection_A
+iacl-copy tempZone/home/bob/data_obj /tempZone/home/rods/collection_A
 ```
 
 - `iacl-inherit`
@@ -51,6 +65,12 @@ iacl-inherit true /tempZone/home/rods/collection_A
 
 ``` bash
 iacl-list -r /tempZone/home/rods /tempZone/home/bob
+```
+
+- `iacl-compare`
+
+``` bash
+iacl-compare -r /tempZone/home/rods/coll_A /tempZone/home/bob/coll_B
 ```
 
 `PermissionManager` class can also be used in any script by importing it as long as authentication to iRODS is ensured.
