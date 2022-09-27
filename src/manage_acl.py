@@ -1,6 +1,6 @@
 from irods.access import iRODSAccess
 from irods.exception import CollectionDoesNotExist, DataObjectDoesNotExist
-from .util import query_data_obj, check_user_group
+from .util import query_data_obj, check_user_group, get_objects_with_no_acl
 
 
 class PermissionManager(object):
@@ -350,3 +350,38 @@ class PermissionManager(object):
                     break
                 [print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') \
                 for i in permissions]
+
+    def search_orphaned_objects(self, collection_path=None, data_obj_path=None, recursive=False):
+        """
+        A method to find the orphaned object 
+        (meaning no acl exists) of a given path
+        """
+        if collection_path and recursive == True:
+            object_list_with_no_acl = get_objects_with_no_acl(self.session, collection_path)
+            if len(object_list_with_no_acl) > 0:
+                print('Warning: Objects below have no granted permissions.')
+                [print(i) for i in object_list_with_no_acl.values()]
+            else:
+                print('No orphaned object is available.')
+
+        elif collection_path:
+            coll_instance = self.session.collections.get(collection_path)
+            permissions_collection = self.session.permissions.get(coll_instance)
+            if len(permissions_collection) == 0:
+                print(False)
+            else:
+                print('This collection has an granted permission.')
+
+        elif data_obj_path:
+            obj_instance = self.session.data_objects.get(data_obj_path)
+            permissions_data_object = self.session.permissions.get(obj_instance)
+            if len(permissions_data_object) == 0:
+                print(False)
+            else:
+                print('This data object has an granted permission.')
+
+    def restore_original_owner(self, collection_path=None, data_obj_path=None):
+        """A method to set original ACL onto the orphaned object """
+        object_list_with_no_acl = get_objects_with_no_acl(self.session, collection_path)
+        
+

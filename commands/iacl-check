@@ -1,0 +1,62 @@
+#!/usr/bin/env python
+
+from itertools import permutations
+import sys
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
+from src.util import GetiRODSSession
+from src.manage_acl import PermissionManager
+
+
+desc = """Checks whether an iRODS path provided has any permissions or not. 
+If there is no attached permission, it will show 'False'. When the command is
+used recursively (with -r/--recursive flag), it shows 'False' if any sub-collections
+or data objects dont have permissions granted and it will print paths that dont have
+any avaliable permission. 
+
+Example:
+iacl-check /tempZone/home/rods/data_object
+iacl-check /tempZone/home/rods /tempZone/home/rods/collection_A
+iacl-check -r /tempZone/home/rods
+"""
+
+if len(sys.argv) < 2:
+    print('You need to specify an option/argument/parameter!')
+    print('Check iacl-check --help or -h for more information.')
+    sys.exit()
+
+arg_parser = ArgumentParser(description=desc,
+                            formatter_class=RawDescriptionHelpFormatter)
+
+arg_parser.add_argument('args', nargs='?',
+                        help='Provide an absolute iRODS path - collection or data object')
+
+arg_parser.add_argument('-r', '--recursive',
+                        help='Looks for all sub items of a collection to find any that does not have a permission on.')
+
+args = arg_parser.parse_args()
+
+def check_object_type(session, path):
+    """A function to check the path type given"""
+    result_path = dict()
+    if session.collections.exists(path):
+        result_path['coll_path'] = path
+    if session.data_objects.exists(path):
+        result_path['obj_path'] = path
+    return result_path
+
+with GetiRODSSession() as session:
+
+    if args.recursive:
+        permission_check = PermissionManager(session)
+        permission_check.search_orphaned_objects(collection_path=args.recursive, recursive=True)
+    else:
+        path_type = check_object_type(session, args.args)
+        for item in path_type.keys():
+            if item == 'coll_path':
+                permission_check = PermissionManager(session)
+                permission_check.search_orphaned_objects(collection_path=args.args)
+
+            if item == 'obj_path':
+                permission_check = PermissionManager(session)
+                permission_check.search_orphaned_objects(data_obj_path=args.args)
+        
