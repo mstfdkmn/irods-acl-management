@@ -26,7 +26,7 @@ iacl-add read userBob userJan group_A /tempZone/home/rods/data_obj.txt
 - `iacl-clear`
 
 ``` bash
-iacl-clear -r /tempZone/home/rods/collection_A
+iacl-clear /tempZone/home/rods/collection_A
 iacl-clear -r /tempZone/home/group_A
 iacl-clear /tempZone/home/rods/data_obj
 ```
