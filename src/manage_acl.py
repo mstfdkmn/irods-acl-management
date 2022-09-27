@@ -166,7 +166,7 @@ class PermissionManager(object):
                     for data_obj in item[2]:
                         data_obj_name = data_obj.name
                         data_obj_path = f'{coll_path}/{data_obj_name}'
-                        acl_target_data_objects = iRODSAccess(alc_type, data_obj_path, user)                    
+                        acl_target_data_objects = iRODSAccess(alc_type, data_obj_path, user)
                         self.session.permissions.set(acl_target_data_objects, admin=True)
         acl_target_data_path = iRODSAccess(alc_type, self.target_path, user)
         self.session.permissions.set(acl_target_data_path, admin=True)
@@ -358,9 +358,11 @@ class PermissionManager(object):
         """
         if collection_path and recursive == True:
             object_list_with_no_acl = get_objects_with_no_acl(self.session, collection_path)
-            if len(object_list_with_no_acl) > 0:
+            if len(object_list_with_no_acl['coll']) > 0 and len(object_list_with_no_acl['data_obj']) > 0:
                 print('Warning: Objects below have no granted permissions.')
-                [print(i) for i in object_list_with_no_acl.values()]
+                object_list_with_no_acl_list = [i for i in object_list_with_no_acl.values()]
+                [print(i) for i in object_list_with_no_acl_list[0]]
+                [print(i) for i in object_list_with_no_acl_list[1]]
             else:
                 print('No orphaned object is available.')
 
@@ -380,8 +382,41 @@ class PermissionManager(object):
             else:
                 print('This data object has an granted permission.')
 
-    def restore_original_owner(self, collection_path=None, data_obj_path=None):
+    def restore_original_owner(self, collection_path=None, data_obj_path=None, recursive=False):
         """A method to set original ACL onto the orphaned object """
-        object_list_with_no_acl = get_objects_with_no_acl(self.session, collection_path)
-        
+        if collection_path and recursive == True:
+            object_list_with_no_acl = get_objects_with_no_acl(self.session, collection_path)
+            if len(object_list_with_no_acl) > 0:
+                for obj_type, paths in object_list_with_no_acl.items():
+                    for path in paths:
+                        if obj_type == 'coll' and len(paths) > 0:    
+                            coll_instance = self.session.collections.get(path)
+                            permissions_collection = self.session.permissions.get(coll_instance)
+                            user = coll_instance.owner_name
+                            acl_target_collection = iRODSAccess('own', path, user)
+                            self.session.permissions.set(acl_target_collection, admin=True)
+                        elif obj_type == 'data_obj' and len(paths) > 0:
+                            obj_instance = self.session.data_objects.get(path)
+                            permissions_data_object = self.session.permissions.get(obj_instance)
+                            user = obj_instance.owner_name
+                            acl_target_data_object = iRODSAccess('own', path, user)                    
+                            self.session.permissions.set(acl_target_data_object, admin=True)
+        elif collection_path:
+            coll_instance = self.session.collections.get(collection_path)
+            permissions_collection = self.session.permissions.get(coll_instance)
+            if len(permissions_collection) == 0:
+                user = coll_instance.owner_name
+                acl_target_collection = iRODSAccess('own', collection_path, user)
+                self.session.permissions.set(acl_target_collection, admin=True)
+            else:
+                print('This object has already a granted permission.')
+        elif data_obj_path:
+            obj_instance = self.session.data_objects.get(data_obj_path)
+            permissions_data_object = self.session.permissions.get(obj_instance)
+            if len(permissions_data_object) == 0:
+                user = obj_instance.owner_name
+                acl_target_data_object = iRODSAccess('own', data_obj_path, user)                    
+                self.session.permissions.set(acl_target_data_object, admin=True)
+            else:
+                print('This object has already a granted permission.')
 

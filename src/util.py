@@ -69,19 +69,33 @@ def check_user_group(session, user):
     return len(result.all().rows) > 0
 
 def get_objects_with_no_acl(session, collection_path):
-    object_list_with_no_acl = dict()
+    """
+    A function to get the objects that don't have any permission on.
+    Parameters
+    ----------
+    session : object
+        an iRODS session object
+    collection_path : str
+        an absolute in iRODS
+    Returns
+    -------
+    object_list_with_no_acl : dict
+    """
     collection = session.collections.get(collection_path)
+    object_list_with_no_acl = dict()
+    object_list_with_no_acl.setdefault('coll', [])
+    object_list_with_no_acl.setdefault('data_obj', [])
     all_colls = collection.walk()
     for coll in all_colls:
         coll_path = coll[0].path
         coll_instance = session.collections.get(coll_path)
         permissions_collections = session.permissions.get(coll_instance)
         if len(permissions_collections) == 0:
-            object_list_with_no_acl['coll'] = coll_path
+            object_list_with_no_acl['coll'].extend([coll_path])
         for obj in coll[0].data_objects:
             obj_path = f'{coll[0].path}/{obj.name}'
             obj_instance = session.data_objects.get(obj_path)
             permissions_data_objects = session.permissions.get(obj_instance)
             if len(permissions_data_objects) == 0:
-                object_list_with_no_acl['data_obj'] = obj_path
+                object_list_with_no_acl['data_obj'].extend([obj_path])
     return object_list_with_no_acl
