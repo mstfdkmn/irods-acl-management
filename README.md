@@ -100,5 +100,5 @@ Or linux users can download `setup.sh` file and run `bash setup.sh` command.
 
 ## Limitations
 
-- `iacl-list -r` could be slow for the deep running because of the lack of relevant attribute in prc for the group users.
+- `iacl-list -r` could be slow for the deep running because of the lack of a relevant attribute in prc for group-users.
 - Executing `iacl-check -r` and `iacl-restore -r` could take long time because those commands check permissions of each object registered under the iRODS logical name space.
