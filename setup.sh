@@ -20,5 +20,5 @@ echo "cloning done."
 cd irods-acl-management
 
 iRODS_ACL_ROOT=$HOME/irods-acl-management
-PYTHONPATH=$PYTHONPATH:$iRODS_ACL_ROOT
-PATH=$PATH:$iRODS_ACL_ROOT/commands
+export PYTHONPATH=$PYTHONPATH:$iRODS_ACL_ROOT
+export PATH=$PATH:$iRODS_ACL_ROOT/commands

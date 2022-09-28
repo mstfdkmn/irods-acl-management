@@ -18,7 +18,7 @@ This is a complementary command line utility for rodsadmin users to manage permi
 A set of scripts available in the `commands` directory can be used in any terminal - command line interface once the installation is completed correctly. Each command will show a documentation that describes funcinalities, arguments and examples by `-h` or `--help` e.g. `iacl-copy --help`. 
 
 
-- `iacl-copy`
+- iacl-copy
 
 ``` bash
 iacl-copy tempZone/home/bob/collection_A /tempZone/home/rods/data_obj
@@ -26,7 +26,7 @@ iacl-copy tempZone/home/bob/collection_A /tempZone/home/rods/collection_A
 iacl-copy tempZone/home/bob/data_obj /tempZone/home/rods/collection_A
 ```
 
-- `iacl-clear`
+- iacl-clear
 
 ``` bash
 iacl-clear /tempZone/home/rods/collection_A
@@ -34,7 +34,7 @@ iacl-clear -r /tempZone/home/group_A
 iacl-clear /tempZone/home/rods/data_obj
 ```
 
-- `iacl-check`
+- iacl-check
 
 ``` bash
 iacl-check -r /tempZone/home/rods
@@ -42,7 +42,7 @@ iacl-check /tempZone/home/rods/collection_A
 iacl-check /tempZone/home/rods/data_obj
 ```
 
-- `iacl-restore`
+- iacl-restore
 
 ``` bash
 iacl-restore /tempZone/home/rods/data_object
@@ -50,32 +50,32 @@ iacl-restore /tempZone/home/rods/collection_A
 iacl-restore -r /tempZone/home/rods
 ```
 
-- `iacl-save`
+- iacl-save
 
 ``` bash
 iacl-save /tempZone/home/rods -l /home/user -f csv
 iacl-save /tempZone/home/group_A --location /tmp --format json
 ```
 
-- `iacl-add`
+- iacl-add
 
 ``` bash
 iacl-add read userBob userJan group_A /tempZone/home/rods/data_obj.txt
 ```
 
-- `iacl-inherit`
+- iacl-inherit
 
 ``` bash
 iacl-inherit true /tempZone/home/rods/collection_A
 ```
 
-- `iacl-list`
+- iacl-list
 
 ``` bash
 iacl-list -r /tempZone/home/rods /tempZone/home/bob
 ```
 
-- `iacl-compare`
+- iacl-compare
 
 ``` bash
 iacl-compare -r /tempZone/home/rods/coll_A /tempZone/home/bob/coll_B
