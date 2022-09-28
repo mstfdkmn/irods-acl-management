@@ -1,6 +1,9 @@
 import os
 import os.path
 import ssl
+import csv
+import json
+from datetime import datetime
 from irods.session import iRODSSession
 from irods.models import Collection, DataObject, UserGroup, User
 from irods.column import Criterion
@@ -99,3 +102,49 @@ def get_objects_with_no_acl(session, collection_path):
             if len(permissions_data_objects) == 0:
                 object_list_with_no_acl['data_obj'].extend([obj_path])
     return object_list_with_no_acl
+
+def write_acl_csv(session, coll_path, local_path):
+
+    collection = session.collections.get(coll_path)
+    all_colls = collection.walk()
+    filename = f"{local_path}/{'irods_permissions_{0}.csv'.format(datetime.today().strftime('%Y%m%d_%H%M'))}"
+    with open(filename, 'a') as f:
+        writer = csv.writer(f)
+        writer.writerow(['iRODS PATH', 'USER NAME', 'ACL'])
+        for coll in all_colls:
+            coll_path = coll[0].path
+            coll_instance = session.collections.get(coll_path)
+            permissions_collections = session.permissions.get(coll_instance)
+            writer.writerows([(item.path, item.user_name, item.access_name) for item in permissions_collections])
+            for obj in coll[0].data_objects:
+                obj_path = f'{coll[0].path}/{obj.name}'
+                obj_instance = session.data_objects.get(obj_path)
+                permissions_data_objects = session.permissions.get(obj_instance)
+                writer.writerows([(item.path, item.user_name, item.access_name) for item in permissions_data_objects])
+
+def write_acl_json(session, coll_path, local_path):
+
+
+    filename = f"{local_path}/{'irods_permissions_{0}.json'.format(datetime.today().strftime('%Y%m%d_%H%M'))}"
+    collection = session.collections.get(coll_path)
+    all_colls = collection.walk()
+    acl_dict = dict()
+    for coll in all_colls:
+        single_coll_path = coll[0].path
+        coll_instance = session.collections.get(single_coll_path)
+        permissions_collections = session.permissions.get(coll_instance)
+        for item in permissions_collections:
+            acl_dict[item.path] = {}
+            break
+        [acl_dict[item.path].update({item.user_name: item.access_name}) for item in permissions_collections]
+
+        for obj in coll[0].data_objects:
+            obj_path = f'{coll[0].path}/{obj.name}'
+            obj_instance = session.data_objects.get(obj_path)
+            permissions_data_objects = session.permissions.get(obj_instance)
+            for item in permissions_data_objects:
+                acl_dict[item.path] = {}
+                break
+            [acl_dict[item.path].update({item.user_name: item.access_name}) for item in permissions_data_objects]
+    with open(filename, 'a') as write_file:
+            json.dump(acl_dict, write_file, indent=True)

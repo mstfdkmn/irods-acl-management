@@ -17,10 +17,13 @@ This is a complementary command line utility for rodsadmin users to manage permi
 ## How to use
 A set of scripts available in the `commands` directory can be used in any terminal - command line interface once the installation is completed correctly. Each command will show a documentation that describes funcinalities, arguments and examples by `-h` or `--help` e.g. `iacl-copy --help`. 
 
-- `iacl-add`
+
+- `iacl-copy`
 
 ``` bash
-iacl-add read userBob userJan group_A /tempZone/home/rods/data_obj.txt
+iacl-copy tempZone/home/bob/collection_A /tempZone/home/rods/data_obj
+iacl-copy tempZone/home/bob/collection_A /tempZone/home/rods/collection_A
+iacl-copy tempZone/home/bob/data_obj /tempZone/home/rods/collection_A
 ```
 
 - `iacl-clear`
@@ -42,17 +45,22 @@ iacl-check /tempZone/home/rods/data_obj
 - `iacl-restore`
 
 ``` bash
-iacl-check -r /tempZone/home/rods
-iacl-check /tempZone/home/rods/collection_A
-iacl-check /tempZone/home/rods/data_obj
+iacl-restore /tempZone/home/rods/data_object
+iacl-restore /tempZone/home/rods/collection_A
+iacl-restore -r /tempZone/home/rods
 ```
 
-- `iacl-copy`
+- `iacl-save`
 
 ``` bash
-iacl-copy tempZone/home/bob/collection_A /tempZone/home/rods/data_obj
-iacl-copy tempZone/home/bob/collection_A /tempZone/home/rods/collection_A
-iacl-copy tempZone/home/bob/data_obj /tempZone/home/rods/collection_A
+iacl-save /tempZone/home/rods -l /home/user -f csv
+iacl-save /tempZone/home/group_A --location /tmp --format json
+```
+
+- `iacl-add`
+
+``` bash
+iacl-add read userBob userJan group_A /tempZone/home/rods/data_obj.txt
 ```
 
 - `iacl-inherit`
@@ -89,3 +97,8 @@ iacl-compare -r /tempZone/home/rods/coll_A /tempZone/home/bob/coll_B
 - Add the `$iRODS_ACL_ROOT/commands` directory to your `$PATH`
 
 Or linux users can download `setup.sh` file and run `bash setup.sh` command.
+
+## Limitations
+
+- `iacl-list -r` could be slow for the deep running because of the lack of relevant attribute in prc for the group users.
+- Executing `iacl-check -r` and `iacl-restore -r` could take long time because those commands check permissions of each object registered under the iRODS logical name space.

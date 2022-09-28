@@ -1,6 +1,6 @@
 from irods.access import iRODSAccess
 from irods.exception import CollectionDoesNotExist, DataObjectDoesNotExist
-from .util import query_data_obj, check_user_group, get_objects_with_no_acl
+from .util import query_data_obj, check_user_group, get_objects_with_no_acl, write_acl_csv, write_acl_json
 
 
 class PermissionManager(object):
@@ -420,3 +420,15 @@ class PermissionManager(object):
             else:
                 print('This object has already a granted permission.')
 
+    def save_acl(self, coll_path, local_path, format=None):
+        """
+        A method to write all given ACLs of an iRODS
+        path into the specified file format
+        """
+        if format == 'csv':
+            write_acl_csv(self.session, coll_path, local_path)
+        elif format == 'json':
+            write_acl_json(self.session, coll_path, local_path)
+        else:
+            print('You did not provide a correct file format.\
+                   Choose either csv or json')
