@@ -358,7 +358,7 @@ class PermissionManager(object):
         """
         if collection_path and recursive == True:
             object_list_with_no_acl = get_objects_with_no_acl(self.session, collection_path)
-            if len(object_list_with_no_acl['coll']) > 0 and len(object_list_with_no_acl['data_obj']) > 0:
+            if len(object_list_with_no_acl['coll']) > 0 or len(object_list_with_no_acl['data_obj']) > 0:
                 print('Warning: Objects below have no granted permissions.')
                 object_list_with_no_acl_list = [i for i in object_list_with_no_acl.values()]
                 [print(i) for i in object_list_with_no_acl_list[0]]
