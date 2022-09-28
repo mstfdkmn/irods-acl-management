@@ -84,6 +84,7 @@ def get_objects_with_no_acl(session, collection_path):
     -------
     object_list_with_no_acl : dict
     """
+
     collection = session.collections.get(collection_path)
     object_list_with_no_acl = dict()
     object_list_with_no_acl.setdefault('coll', [])
@@ -104,6 +105,16 @@ def get_objects_with_no_acl(session, collection_path):
     return object_list_with_no_acl
 
 def write_acl_csv(session, coll_path, local_path):
+    """
+    A function to write ACLs of a given collection to a csv file.
+    ----------
+    session : object
+        an iRODS session object
+    collection_path : str
+        an absolute in iRODS
+    local_path : str
+        an absolute local file system path
+    """
 
     collection = session.collections.get(coll_path)
     all_colls = collection.walk()
@@ -123,7 +134,16 @@ def write_acl_csv(session, coll_path, local_path):
                 writer.writerows([(item.path, item.user_name, item.access_name) for item in permissions_data_objects])
 
 def write_acl_json(session, coll_path, local_path):
-
+    """
+    A function to write ACLs of a given collection to a json file.
+    ----------
+    session : object
+        an iRODS session object
+    collection_path : str
+        an absolute in iRODS
+    local_path : str
+        an absolute local file system path
+    """
 
     filename = f"{local_path}/{'irods_permissions_{0}.json'.format(datetime.today().strftime('%Y%m%d_%H%M'))}"
     collection = session.collections.get(coll_path)
