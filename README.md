@@ -96,7 +96,13 @@ iacl-compare -r /tempZone/home/rods/coll_A /tempZone/home/bob/coll_B
 - Add the `$iRODS_ACL_ROOT` directory to your `$PYTHONPATH`
 - Add the `$iRODS_ACL_ROOT/commands` directory to your `$PATH`
 
-Or linux users can download `setup.sh` file and run `bash setup.sh` command.
+Or linux users can download `setup.sh` file and run `.setup.sh` command.
+
+``` bash
+iRODS_ACL_ROOT="$HOME/irods-acl-management"
+export PYTHONPATH="$PYTHONPATH:$iRODS_ACL_ROOT"
+export PATH="$PATH:$iRODS_ACL_ROOT/commands"
+```
 
 ## Limitations
 
