@@ -18,7 +18,7 @@ This is a complementary command line utility for rodsadmin users to manage permi
 A set of scripts available in the `commands` directory can be used in any terminal - command line interface once the installation is completed correctly. Each command will show a documentation that describes funcinalities, arguments and examples by `-h` or `--help` e.g. `iacl-copy --help`. 
 
 
-- iacl-copy:
+- iacl-copy: To copy ACLs of one object to another one.
 
 ``` bash
 iacl-copy tempZone/home/bob/collection_A /tempZone/home/rods/data_obj
@@ -26,7 +26,7 @@ iacl-copy tempZone/home/bob/collection_A /tempZone/home/rods/collection_A
 iacl-copy tempZone/home/bob/data_obj /tempZone/home/rods/collection_A
 ```
 
-- iacl-clear
+- iacl-clear: To remove all existing ACLs.
 
 ``` bash
 iacl-clear /tempZone/home/rods/collection_A
@@ -34,7 +34,7 @@ iacl-clear -r /tempZone/home/group_A
 iacl-clear /tempZone/home/rods/data_obj
 ```
 
-- iacl-check
+- iacl-check: To control whether there is any object which does not have an ACL.
 
 ``` bash
 iacl-check -r /tempZone/home/rods
@@ -42,7 +42,7 @@ iacl-check /tempZone/home/rods/collection_A
 iacl-check --zone tempZone
 ```
 
-- iacl-restore
+- iacl-restore: To add back the ACL of originator on object which does not have an ACL.
 
 ``` bash
 iacl-restore /tempZone/home/rods/data_object
@@ -50,29 +50,31 @@ iacl-restore /tempZone/home/rods/collection_A
 iacl-restore -z tempZone
 ```
 
-- iacl-save
+- iacl-save: To write all available ACLs of a collection structure in a `csv` or `json` file.
 
 ``` bash
 iacl-save /tempZone/home/rods -l /home/user -f csv
 iacl-save /tempZone/home/group_A --location /tmp --format json
 ```
 
-- iacl-add
+- iacl-add: To set (add/remove/modify) permissions of an iRODS path (you can do this for multiple users at the same time).
 
 ``` bash
 iacl-add read userBob userJan group_A /tempZone/home/rods/data_obj.txt
 ```
 
-- iacl-inherit
+- iacl-inherit: To change the inheritance also with true/false and yes/no. 
 
 ``` bash
 iacl-inherit true /tempZone/home/rods/collection_A
 ```
 
-- iacl-list
+- iacl-list: To list only the permissions of collections when a collection is targeted, (it behaves like `ils` for data objects).
 
 ``` bash
-iacl-list -r /tempZone/home/rods /tempZone/home/bob
+iacl-list -r /tempZone/home/rods 
+iacl-list /tempZone/home/bob
+iacl-list /tempZone/home/rods/data_object
 ```
 
 - iacl-compare
@@ -106,4 +108,4 @@ export PATH="$PATH:$iRODS_ACL_ROOT/commands"
 
 ## Limitations
 
-- `iacl-list -r` could be slow for the deep running because of the lack of a relevant attribute in prc for group-users.
+`iacl-list -r` could be slow for the deep running because of the lack of a relevant attribute in prc for group-users.
