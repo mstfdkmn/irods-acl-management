@@ -7,6 +7,7 @@ from datetime import datetime
 from irods.session import iRODSSession
 from irods.models import Collection, DataObject, UserGroup, User
 from irods.column import Criterion
+from irods.query import SpecificQuery
 
 
 class GetiRODSSession(iRODSSession):
@@ -102,6 +103,51 @@ def get_objects_with_no_acl(session, collection_path):
             permissions_data_objects = session.permissions.get(obj_instance)
             if len(permissions_data_objects) == 0:
                 object_list_with_no_acl['data_obj'].extend([obj_path])
+    return object_list_with_no_acl
+
+def get_objects_with_no_acl_for_entire_zone(session):
+    """
+    A function to get the objects that don't have any
+    permission on in the entire zone.
+    Parameters
+    ----------
+    session : object
+        an iRODS session object
+    Returns
+    -------
+    object_list_with_no_acl : list
+    """
+
+    object_list_with_no_acl = []
+    sql_obj = 'select data_id, data_name from R_DATA_MAIN where data_id not in \
+                (select object_id from R_OBJT_ACCESS)'
+    alias_obj = 'list_orphaned_data_object'
+    columns_obj = [DataObject.id, DataObject.name]
+    sql_coll = 'select coll_id, coll_name from R_COLL_MAIN where coll_id not in \
+                (select object_id from R_OBJT_ACCESS)'
+    alias_coll = 'list_orphaned_collections'
+    columns_coll = [Collection.id, Collection.name]
+    try:
+        query_obj = SpecificQuery(session, sql_obj, alias_obj, columns_obj)
+        query_coll = SpecificQuery(session, sql_coll, alias_coll, columns_coll)
+    except Exception as err:
+        print(err)
+    else:
+        query_obj.register()
+        query_coll.register()
+        try:
+            for result in query_obj:
+                query = session.query(Collection.name, DataObject.name).filter(
+                        Criterion('=', DataObject.name, result[DataObject.name]))
+                object_list_with_no_acl.append(('data_obj', [f'{i[Collection.name]}/{i[DataObject.name]}' \
+                                                for i in query][0]))
+            for result in query_coll:
+                object_list_with_no_acl.append(('collection', result[Collection.name]))
+        except Exception as err:
+            print(err.args)
+    finally:
+        query_obj.remove()
+        query_coll.remove()
     return object_list_with_no_acl
 
 def write_acl_csv(session, coll_path, local_path):

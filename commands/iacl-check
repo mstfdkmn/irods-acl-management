@@ -8,14 +8,14 @@ from src.manage_acl import PermissionManager
 
 desc = """Checks whether an iRODS path provided has any permissions or not. 
 If there is no attached permission, it will show 'False'. When the command is
-used recursively (with -r/--recursive flag), it shows 'False' if any sub-collections
+used for the entire zone (with -z/--zone), it shows 'False' if any sub-collections
 or data objects dont have permissions granted and it will print paths that dont have
 any avaliable permission. 
 
 Example:
 iacl-check /tempZone/home/rods/data_object
 iacl-check /tempZone/home/rods /tempZone/home/rods/collection_A
-iacl-check -r /tempZone/home/rods
+iacl-check -z tempZone
 """
 
 if len(sys.argv) < 2:
@@ -29,8 +29,9 @@ arg_parser = ArgumentParser(description=desc,
 arg_parser.add_argument('args', nargs='?',
                         help='Provide an absolute iRODS path - collection or data object')
 
-arg_parser.add_argument('-r', '--recursive',
-                        help='Looks for all sub items of a collection to find any that does not have a permission on.')
+arg_parser.add_argument('-z', '--zone',
+                        help='Looks for all sub items of the zone (collection, data objects) \
+                              to find any that does not have a permission on.')
 
 args = arg_parser.parse_args()
 
@@ -44,10 +45,10 @@ def check_object_type(session, path):
     return result_path
 
 with GetiRODSSession() as session:
-
-    if args.recursive:
+    
+    if args.zone == session.zone:
         permission_check = PermissionManager(session)
-        permission_check.search_orphaned_objects(collection_path=args.recursive, recursive=True)
+        permission_check.search_orphaned_objects_entire_zone(zone_name=session.zone)
     else:
         path_type = check_object_type(session, args.args)
         for item in path_type.keys():

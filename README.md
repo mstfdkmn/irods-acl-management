@@ -18,7 +18,7 @@ This is a complementary command line utility for rodsadmin users to manage permi
 A set of scripts available in the `commands` directory can be used in any terminal - command line interface once the installation is completed correctly. Each command will show a documentation that describes funcinalities, arguments and examples by `-h` or `--help` e.g. `iacl-copy --help`. 
 
 
-- iacl-copy
+- iacl-copy:
 
 ``` bash
 iacl-copy tempZone/home/bob/collection_A /tempZone/home/rods/data_obj
@@ -39,7 +39,7 @@ iacl-clear /tempZone/home/rods/data_obj
 ``` bash
 iacl-check -r /tempZone/home/rods
 iacl-check /tempZone/home/rods/collection_A
-iacl-check /tempZone/home/rods/data_obj
+iacl-check --zone tempZone
 ```
 
 - iacl-restore
@@ -47,7 +47,7 @@ iacl-check /tempZone/home/rods/data_obj
 ``` bash
 iacl-restore /tempZone/home/rods/data_object
 iacl-restore /tempZone/home/rods/collection_A
-iacl-restore -r /tempZone/home/rods
+iacl-restore -z tempZone
 ```
 
 - iacl-save
@@ -107,4 +107,3 @@ export PATH="$PATH:$iRODS_ACL_ROOT/commands"
 ## Limitations
 
 - `iacl-list -r` could be slow for the deep running because of the lack of a relevant attribute in prc for group-users.
-- Executing `iacl-check -r` and `iacl-restore -r` could take long time because those commands check permissions of each object registered under the iRODS logical name space.

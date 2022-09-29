@@ -14,12 +14,12 @@ user to each object (collection or data object) that dont have any avaliable per
 Example:
 iacl-restore /tempZone/home/rods/data_object
 iacl-restore /tempZone/home/rods/collection_A
-iacl-restore -r /tempZone/home/rods
+iacl-restore -z tempZone
 """
 
 if len(sys.argv) < 2:
     print('You need to specify an option/argument/parameter!')
-    print('Check iacl-save --help or -h for more information.')
+    print('Check iacl-restore --help or -h for more information.')
     sys.exit()
 
 arg_parser = ArgumentParser(description=desc,
@@ -28,9 +28,9 @@ arg_parser = ArgumentParser(description=desc,
 arg_parser.add_argument('args', nargs='?',
                         help='Provide an absolute iRODS path - collection or data object')
 
-arg_parser.add_argument('-r', '--recursive',
-                        help='Looks for all sub items of a collection to restore original owner access \
-                              to each object that does not have a permission on.')
+arg_parser.add_argument('-z', '--zone',
+                        help='Looks for all sub items (collections, data objects) of the zone to original \
+                              owner access to each object that does not have a permission on.')
 
 args = arg_parser.parse_args()
 
@@ -45,9 +45,9 @@ def check_object_type(session, path):
 
 with GetiRODSSession() as session:
 
-    if args.recursive:
+    if args.zone == session.zone:
         permission_check = PermissionManager(session)
-        permission_check.restore_original_owner(collection_path=args.recursive, recursive=True)
+        permission_check.restore_original_owner(zone_name=session.zone)
     else:
         path_type = check_object_type(session, args.args)
         for item in path_type.keys():

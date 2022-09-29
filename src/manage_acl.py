@@ -1,6 +1,7 @@
 from irods.access import iRODSAccess
 from irods.exception import CollectionDoesNotExist, DataObjectDoesNotExist
-from .util import query_data_obj, check_user_group, get_objects_with_no_acl, write_acl_csv, write_acl_json
+from .util import query_data_obj, check_user_group, get_objects_with_no_acl, \
+                  write_acl_csv, write_acl_json, get_objects_with_no_acl_for_entire_zone
 
 
 class PermissionManager(object):
@@ -382,25 +383,44 @@ class PermissionManager(object):
             else:
                 print('This data object has an granted permission.')
 
-    def restore_original_owner(self, collection_path=None, data_obj_path=None, recursive=False):
-        """A method to set original ACL onto the orphaned object """
-        if collection_path and recursive == True:
-            object_list_with_no_acl = get_objects_with_no_acl(self.session, collection_path)
+    def search_orphaned_objects_entire_zone(self, zone_name=None):
+        """
+        A method to find the orphaned object 
+        (meaning no acl exists) of a entire zone
+        """
+
+        object_list_with_no_acl = get_objects_with_no_acl_for_entire_zone(self.session)
+        if zone_name:
             if len(object_list_with_no_acl) > 0:
-                for obj_type, paths in object_list_with_no_acl.items():
-                    for path in paths:
-                        if obj_type == 'coll' and len(paths) > 0:    
-                            coll_instance = self.session.collections.get(path)
-                            permissions_collection = self.session.permissions.get(coll_instance)
-                            user = coll_instance.owner_name
-                            acl_target_collection = iRODSAccess('own', path, user)
-                            self.session.permissions.set(acl_target_collection, admin=True)
-                        elif obj_type == 'data_obj' and len(paths) > 0:
-                            obj_instance = self.session.data_objects.get(path)
-                            permissions_data_object = self.session.permissions.get(obj_instance)
-                            user = obj_instance.owner_name
-                            acl_target_data_object = iRODSAccess('own', path, user)                    
-                            self.session.permissions.set(acl_target_data_object, admin=True)
+                print('Warning: Objects below have no granted permissions.')
+                for item in object_list_with_no_acl:
+                    if item[0] == 'collection':
+                        print(f'C -  {item[1]}')
+                    if item[0] == 'data_obj':
+                        print(item[1])
+            else:
+                print('There is no object that doesnt have any permission in your zone.')
+
+    def restore_original_owner(self, collection_path=None, data_obj_path=None, zone_name=None):
+        """A method to set original ACL onto the orphaned object """
+        if zone_name:
+            object_list_with_no_acl = get_objects_with_no_acl_for_entire_zone(self.session)
+            if len(object_list_with_no_acl) > 0:
+                for item in object_list_with_no_acl:
+                    if item[0] == 'collection':
+                        coll_instance = self.session.collections.get(item[1])
+                        permissions_collection = self.session.permissions.get(coll_instance)
+                        user = coll_instance.owner_name
+                        acl_target_collection = iRODSAccess('own', item[1], user)
+                        self.session.permissions.set(acl_target_collection, admin=True)
+                    elif item[0] == 'data_obj':
+                        obj_instance = self.session.data_objects.get(item[1])
+                        permissions_data_object = self.session.permissions.get(obj_instance)
+                        user = obj_instance.owner_name
+                        acl_target_data_object = iRODSAccess('own', item[1], user)                    
+                        self.session.permissions.set(acl_target_data_object, admin=True)
+            else:
+                print('There is no object that has missing permission to be restored in your zone.')
         elif collection_path:
             coll_instance = self.session.collections.get(collection_path)
             permissions_collection = self.session.permissions.get(coll_instance)
