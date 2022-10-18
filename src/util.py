@@ -98,7 +98,7 @@ def get_objects_with_no_acl(session, collection_path):
         if len(permissions_collections) == 0:
             object_list_with_no_acl['coll'].extend([coll_path])
         for obj in coll[0].data_objects:
-            obj_path = f'{coll[0].path}/{obj.name}'
+            obj_path = obj.path
             obj_instance = session.data_objects.get(obj_path)
             permissions_data_objects = session.permissions.get(obj_instance)
             if len(permissions_data_objects) == 0:
@@ -174,7 +174,7 @@ def write_acl_csv(session, coll_path, local_path):
             permissions_collections = session.permissions.get(coll_instance)
             writer.writerows([(item.path, item.user_name, item.access_name) for item in permissions_collections])
             for obj in coll[0].data_objects:
-                obj_path = f'{coll[0].path}/{obj.name}'
+                obj_path = obj.path
                 obj_instance = session.data_objects.get(obj_path)
                 permissions_data_objects = session.permissions.get(obj_instance)
                 writer.writerows([(item.path, item.user_name, item.access_name) for item in permissions_data_objects])

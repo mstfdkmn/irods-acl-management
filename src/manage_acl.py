@@ -276,7 +276,7 @@ class PermissionManager(object):
                 [print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') \
                 for i in permissions]
                 for i in item[0].data_objects:
-                    obj_path = f'{item[0].path}/{i.name}'
+                    obj_path = i.path
                     obj = self.session.data_objects.get(obj_path)
                     permissions_data_objects = self.session.permissions.get(obj)
                     for i in permissions_data_objects:
@@ -301,7 +301,7 @@ class PermissionManager(object):
                 [print(f'     {i.user_name}#{i.user_zone}:{i.access_name}') \
                 for i in permissions]
                 for i in item[0].data_objects:
-                    obj_path = f'{item[0].path}/{i.name}'
+                    obj_path = i.path
                     obj = self.session.data_objects.get(obj_path)
                     permissions_data_objects = self.session.permissions.get(obj)
                     for i in permissions_data_objects:
